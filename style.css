@@ -1,0 +1,474 @@
+/* ==========================================================================
+   Ledger — a task tracker
+   Design concept: a single index card lying on a dark desk. Warm aged
+   paper, ink-brown text, a library-tab red for priority/identity, and a
+   muted teal for completed work. Fraunces for the card's own voice,
+   Inter for the tasks people actually type.
+   ========================================================================== */
+
+:root {
+  --bg-desk: #17140f;
+  --bg-desk-2: #1f1a13;
+
+  --paper: #f2e9d3;
+  --paper-line: #d8c9a3;
+  --paper-shadow: rgba(20, 15, 5, 0.55);
+
+  --ink: #2b2013;
+  --ink-soft: #5a4d38;
+  --ink-faint: #8c7d61;
+
+  --red: #a3432c;
+  --red-dim: #a3432c33;
+  --teal: #3d6f63;
+  --teal-dim: #3d6f6322;
+
+  --radius-card: 6px;
+  --radius-sm: 3px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-desk: #17140f;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--bg-desk);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8vh 20px 6vh;
+}
+
+/* -------------------------------------------------------------------- */
+/* Desk backdrop                                                         */
+/* -------------------------------------------------------------------- */
+
+.deskbg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, var(--bg-desk-2), transparent),
+    linear-gradient(180deg, var(--bg-desk) 0%, #100d09 100%);
+}
+
+.deskbg__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, transparent 1px, transparent 2px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0px, transparent 1px, transparent 2px);
+}
+
+/* -------------------------------------------------------------------- */
+/* Tray / card wrapper                                                   */
+/* -------------------------------------------------------------------- */
+
+.tray {
+  width: 100%;
+  max-width: 480px;
+}
+
+.card {
+  position: relative;
+  background: var(--paper);
+  border-radius: var(--radius-card);
+  padding: 34px 32px 22px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 30px 60px -20px var(--paper-shadow),
+    0 8px 20px -10px rgba(0, 0, 0, 0.5);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 37px,
+    var(--paper-line) 38px
+  );
+  background-position: 0 148px;
+  animation: rise 0.6s var(--ease) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; }
+}
+
+/* left margin rule, like a real index card */
+.card::before {
+  content: "";
+  position: absolute;
+  left: 30px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--red-dim);
+}
+
+/* -------------------------------------------------------------------- */
+/* Head                                                                  */
+/* -------------------------------------------------------------------- */
+
+.card__head {
+  padding-left: 10px;
+}
+
+.card__head-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.card__tab {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #fff;
+  background: var(--red);
+  padding: 3px 9px 4px;
+  border-radius: 2px 2px 6px 6px;
+}
+
+.card__stamp {
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.card__title {
+  font-family: 'Fraunces', serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1;
+  margin: 4px 0 6px;
+  color: var(--ink);
+}
+
+.card__subtitle {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+/* -------------------------------------------------------------------- */
+/* Entry form                                                            */
+/* -------------------------------------------------------------------- */
+
+.entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+  margin-bottom: 6px;
+}
+
+.entry__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  border-bottom: 1px solid var(--paper-line);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  padding: 7px 2px;
+  outline: none;
+  transition: border-color 0.2s var(--ease);
+}
+
+.entry__input::placeholder {
+  color: var(--ink-faint);
+}
+
+.entry__input:focus {
+  border-bottom-color: var(--red);
+}
+
+.entry__submit {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), background 0.15s var(--ease);
+}
+
+.entry__submit:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.entry__submit:active {
+  transform: scale(0.92);
+}
+
+.entry__submit:focus-visible,
+.entry__input:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Filters                                                               */
+/* -------------------------------------------------------------------- */
+
+.filters {
+  display: flex;
+  gap: 4px;
+  padding-left: 10px;
+  margin: 16px 0 4px;
+}
+
+.filters__tab {
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.filters__tab:hover {
+  color: var(--ink);
+}
+
+.filters__tab.is-active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.filters__tab:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------- */
+/* List                                                                  */
+/* -------------------------------------------------------------------- */
+
+.list {
+  list-style: none;
+  margin: 12px 0 4px;
+  padding: 0 0 0 10px;
+  min-height: 40px;
+}
+
+.task {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 9px 2px;
+  border-bottom: 1px dashed var(--paper-line);
+  animation: enter 0.22s var(--ease) both;
+}
+
+@keyframes enter {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.task.is-leaving {
+  animation: leave 0.18s var(--ease) forwards;
+}
+
+@keyframes leave {
+  to { opacity: 0; transform: translateX(10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task, .task.is-leaving { animation: none; }
+}
+
+.task__check {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-soft);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: border-color 0.15s var(--ease);
+}
+
+.task__check:hover {
+  border-color: var(--teal);
+}
+
+.task__check:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.task__check svg {
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.15s var(--ease), transform 0.15s var(--ease);
+}
+
+.task.is-done .task__check {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.task.is-done .task__check svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.task__text {
+  flex: 1;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--ink);
+  word-break: break-word;
+  outline: none;
+}
+
+.task.is-done .task__text {
+  color: var(--ink-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-faint);
+  text-decoration-thickness: 1px;
+}
+
+.task__del {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--ink-faint);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0;
+  transition: opacity 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.task:hover .task__del,
+.task__del:focus-visible {
+  opacity: 1;
+}
+
+.task__del:hover {
+  color: var(--red);
+}
+
+.task__del:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Empty state                                                           */
+/* -------------------------------------------------------------------- */
+
+.empty {
+  padding: 18px 2px 10px 10px;
+  margin: 0;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--ink-faint);
+}
+
+/* -------------------------------------------------------------------- */
+/* Footer                                                                */
+/* -------------------------------------------------------------------- */
+
+.card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 2px 4px 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--paper-line);
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.clear-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-faint);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 2px;
+}
+
+.clear-btn:hover {
+  color: var(--red);
+}
+
+.clear-btn:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Credit                                                                */
+/* -------------------------------------------------------------------- */
+
+.credit {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 12px;
+  color: #6b6353;
+}
+
+.credit a {
+  color: #b8ab8a;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.credit a:hover {
+  border-bottom-color: #b8ab8a;
+}
+
+/* -------------------------------------------------------------------- */
+/* Small screens                                                         */
+/* -------------------------------------------------------------------- */
+
+@media (max-width: 420px) {
+  .card { padding: 26px 20px 16px; }
+  .card__title { font-size: 32px; }
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ledger — a task tracker</title>
+  <meta name="description" content="Ledger: a focused, index-card styled task tracker built with plain HTML, CSS and JavaScript." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗂️</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="deskbg">
+    <div class="deskbg__grain"></div>
+  </div>
+
+  <main class="tray">
+
+    <section class="card" id="card">
+
+      <header class="card__head">
+        <div class="card__head-top">
+          <span class="card__tab">TASKS</span>
+          <span class="card__stamp" id="dateStamp">— — —</span>
+        </div>
+        <h1 class="card__title">Ledger</h1>
+        <p class="card__subtitle">One card. Today's work. Nothing else.</p>
+      </header>
+
+      <form class="entry" id="entryForm" autocomplete="off">
+        <input
+          type="text"
+          id="entryInput"
+          class="entry__input"
+          placeholder="Write the next line…"
+          maxlength="140"
+          required
+        />
+        <button type="submit" class="entry__submit" aria-label="Add task">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 2V16M2 9H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </form>
+
+      <nav class="filters" id="filters" role="tablist" aria-label="Filter tasks">
+        <button class="filters__tab is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button class="filters__tab" data-filter="active" role="tab" aria-selected="false">Open</button>
+        <button class="filters__tab" data-filter="done" role="tab" aria-selected="false">Closed</button>
+      </nav>
+
+      <ul class="list" id="list"></ul>
+
+      <p class="empty" id="emptyState" hidden>
+        Blank line. Add something worth doing.
+      </p>
+
+      <footer class="card__foot">
+        <span id="statCount">0 open</span>
+        <button class="clear-btn" id="clearDone" type="button" hidden>Clear closed</button>
+      </footer>
+
+    </section>
+
+    <p class="credit">
+      Built by <a href="https://github.com/abirakhilji" target="_blank" rel="noopener">Abira Khilji</a>
+    </p>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
