@@ -43,6 +43,7 @@ Open `index.html` in a browser — no install step needed.
 ## Built with
 
 HTML, CSS, JavaScript — fonts are [Fraunces](https://fonts.google.com/specimen/Fraunces) and [Inter](https://fonts.google.com/specimen/Inter) from Google Fonts.
+![Ledger Screenshot](screenshot.png)
 
 ## Author
 
