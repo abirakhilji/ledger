@@ -13,6 +13,7 @@ const STORAGE_KEY = 'ledger.tasks.v1';
 /** @type {Task[]} */
 let tasks = loadTasks();
 let currentFilter = 'all'; // 'all' | 'active' | 'done'
+let currentDate = todayStr(); // 'YYYY-MM-DD' — the day currently being viewed
 
 const els = {
   form: document.getElementById('entryForm'),
@@ -23,11 +24,16 @@ const els = {
   statCount: document.getElementById('statCount'),
   clearDone: document.getElementById('clearDone'),
   dateStamp: document.getElementById('dateStamp'),
+   dayPicker: document.getElementById('dayPicker'),
+  prevDay: document.getElementById('prevDay'),
+  nextDay: document.getElementById('nextDay'),
+  todayBtn: document.getElementById('todayBtn'),
 };
 
 init();
 
 function init() {
+   els.dayPicker.value = currentDate;
   renderDateStamp();
   render();
 
@@ -37,6 +43,10 @@ function init() {
   els.list.addEventListener('click', handleListClick);
   els.list.addEventListener('keydown', handleListKeydown);
   els.list.addEventListener('blur', handleTextBlur, true);
+  els.prevDay.addEventListener('click', () => goToDate(addDaysToDateStr(currentDate, -1)));
+  els.nextDay.addEventListener('click', () => goToDate(addDaysToDateStr(currentDate, 1)));
+  els.todayBtn.addEventListener('click', () => goToDate(todayStr()));
+  els.dayPicker.addEventListener('change', () => goToDate(els.dayPicker.value));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -47,6 +57,10 @@ function loadTasks() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
+      // Tasks saved before the calendar feature don't have a `date` —
+    // treat them as today's tasks so nothing old disappears.
+    const today = todayStr();
+    return parsed.map((t) => (t.date ? t : { ...t, date: today }));
   } catch {
     // Corrupt or blocked storage shouldn't crash the app.
     return [];
@@ -76,6 +90,7 @@ function handleAdd(e) {
     text,
     done: false,
     createdAt: Date.now(),
+     date: currentDate,
   });
 
   els.input.value = '';
@@ -176,7 +191,8 @@ function removeTask(id, itemEl) {
 /* ---------------------------------------------------------------------- */
 
 function render() {
-  const visible = tasks.filter((t) => {
+  const visible = tasks.filter((t) =>t.date === currentDate)
+    .filter((t) => {
     if (currentFilter === 'active') return !t.done;
     if (currentFilter === 'done') return t.done;
     return true;
@@ -221,12 +237,48 @@ function emptyMessage() {
 }
 
 function renderDateStamp() {
-  const formatted = new Date().toLocaleDateString('en-US', {
+  els.dateStamp.textContent = formatDisplayDate(currentDate);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Calendar / day navigation                                               */
+/* ---------------------------------------------------------------------- */
+
+function todayStr() {
+  return toDateStr(new Date());
+}
+
+function toDateStr(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function addDaysToDateStr(dateStr, delta) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  date.setDate(date.getDate() + delta);
+  return toDateStr(date);
+}
+
+function formatDisplayDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const formatted = date.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
   });
-  els.dateStamp.textContent = formatted;
+  return dateStr === todayStr() ? `${formatted} · Today` : formatted;
+}
+
+function goToDate(dateStr) {
+  if (!dateStr || dateStr === currentDate) return;
+  currentDate = dateStr;
+  els.dayPicker.value = currentDate;
+  renderDateStamp();
+  render();
 }
 
 function prefersReducedMotion() {
