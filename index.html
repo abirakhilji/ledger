@@ -27,8 +27,14 @@
           <span class="card__stamp" id="dateStamp">— — —</span>
         </div>
         <h1 class="card__title">Ledger</h1>
-        <p class="card__subtitle">One card. Today's work. Nothing else.</p>
+       <p class="card__subtitle">One card. One day at a time.</p>
       </header>
+        <nav class="daynav" id="dayNav" aria-label="Choose day">
+        <button class="daynav__btn" id="prevDay" type="button" aria-label="Previous day">‹</button>
+        <input type="date" id="dayPicker" class="daynav__date" aria-label="Jump to date" />
+        <button class="daynav__btn" id="nextDay" type="button" aria-label="Next day">›</button>
+        <button class="daynav__today" id="todayBtn" type="button">Today</button>
+      </nav>
 
       <form class="entry" id="entryForm" autocomplete="off">
         <input
