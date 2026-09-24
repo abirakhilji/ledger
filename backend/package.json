@@ -1,0 +1,14 @@
+{
+  "name": "ledger-backend",
+  "version": "1.0.0",
+  "description": "Tiny dependency-free REST API for the Ledger to-do app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
