@@ -12,7 +12,7 @@
 // before publishing the site, put your deployed backend URL on the second line.
 const API_BASE = ['localhost', '127.0.0.1', ''].includes(location.hostname)
   ? 'http://localhost:3000/api'
-  : 'https://YOUR-BACKEND-URL/api';
+  : 'https://ledger-pryl.onrender.com/api';
 
 /** @typedef {{ id: string, text: string, done: boolean, createdAt: number, date: string }} Task */
 
